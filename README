@@ -144,13 +144,13 @@ The .externals file consists of a number of groups, one for each scm repository.
 Each group starts with square brackets, containing the group name.
 Following the name, the variables for the group can be set.
 Possible variables are:
-scm - The command of the concrete scm to checkout the repository, e.g. svn or git
-repository - The remote path, where the repository can be found, e.g. https://svnserver/path/to/repo
-path - The local path, where the repository shoud be checked out
-revision - An identifier with which a certain state of the repo can be checked out, e.g. 123 for svn -r 123 or a commit hash for a git repo
-scm_opts - Any options to pass to the underlying scm, e.g. --verbose for svn
-         - also see section below
-type - The type of the project, defining structure and expectable files, e.g. rails
+scm             The command of the concrete scm to checkout the repository, e.g. svn or git
+repository      The remote path, where the repository can be found, e.g. https://svnserver/path/to/repo
+path            The local path, where the repository shoud be checked out
+revision        An identifier with which a certain state of the repo can be checked out, e.g. 123 for svn -r 123 or a commit hash for a git repo
+scm_opts        Any options to pass to the underlying scm, e.g. --verbose for svn
+                also see section below
+type            The type of the project, defining structure and expectable files, e.g. rails
 
 PASSING OPTIONS TO THE UNDERLYING SCM
 -------------------------------------
