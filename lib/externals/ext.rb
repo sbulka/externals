@@ -76,6 +76,9 @@ module Externals
       main project.  This is automatically performed by install,
       and so you probably only will run this if you are manually
       maintaining .externals"],
+    [:info, "ext info [repository]",
+     "Displays revision and branch. If no repository is given, information
+     is displayed for all."],
     [:version, "Displays the version number of externals and exits."],
   ]
 
@@ -757,6 +760,16 @@ Please use the --type option to tell ext which to use."
 
     def version(args, options)
       puts Externals::VERSION
+    end
+
+    def info(args, options)
+      projects.each do |p|
+        if args.empty? or p.path == args[0]
+          puts p.path
+          puts p.revision
+          puts p.branch
+        end
+      end
     end
 
     def self.project_type_detector name
