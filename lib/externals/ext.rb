@@ -387,7 +387,7 @@ Please use
       section = configuration[project.path]
 
       if section[:branch]
-        branch = project.current_branch
+        branch = project.branch
         if branch
           section[:branch] = branch
         else
@@ -611,7 +611,7 @@ by creating the .externals file manually"
       project = main_project
       project.scm ||= scm
 
-      if project.current_branch == branch
+      if project.branch == branch
         puts "Already on branch #{branch}"
       else
         project.switch branch, options
