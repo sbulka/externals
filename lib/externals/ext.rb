@@ -76,9 +76,10 @@ module Externals
       main project.  This is automatically performed by install,
       and so you probably only will run this if you are manually
       maintaining .externals"],
-    [:info, "ext info [repository]",
-     "Displays revision and branch. If no repository is given, information
-     is displayed for all."],
+    [:info, "ext info ['revision'] <repository>",
+     "Displays revision and branch info for the given repository.
+      If the string 'revision' is given, only the revision is displayed.
+      If no repository is given, information is displayed for all repos."],
     [:version, "Displays the version number of externals and exits."],
   ]
 
@@ -764,10 +765,12 @@ Please use the --type option to tell ext which to use."
 
     def info(args, options)
       projects.each do |p|
-        if args.empty? or p.path == args[0]
-          puts p.path
+        if args.empty? or args.include? p.path
+          unless args.include? "revision"
+            puts p.path
+            puts p.branch
+          end
           puts p.revision
-          puts p.branch
         end
       end
     end
