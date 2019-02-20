@@ -765,7 +765,9 @@ Please use the --type option to tell ext which to use."
 
     def info(args, options)
       projects.each do |p|
-        if args.empty? or args.include? p.path
+        if args.empty? \
+          or args.include? p.path \
+          or args.include? p.repository
           unless args.include? "revision"
             puts p.path
             puts p.branch
