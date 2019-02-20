@@ -9,7 +9,7 @@ Dir.entries(File.join(File.dirname(__FILE__), 'extensions')).each do |extension|
 end
 
 module Externals
-  VERSION = '1.1.2'
+  VERSION = '1.1.3'
   PROJECT_TYPES_DIRECTORY = File.join(File.dirname(__FILE__), '..', 'externals','project_types')
 
   # Full commands operate on the main project as well as the externals
@@ -163,7 +163,7 @@ module Externals
       opts.on("--workdir DIR", "-w DIR", String, *"The working directory to execute commands from.  Use this if for some reason you
         cannot execute ext from the main project's directory (or if it's just inconvenient, such as in a script
         or in a Capistrano task)".lines_by_width(summary_width)) {|dir|
-        raise "No such directory: #{dir}" unless File.exists?(dir) && File.directory?(dir)
+        raise "No such directory: #{dir}" unless File.exist?(dir) && File.directory?(dir)
         main_options[:workdir] = dir
       }
       opts.on(
@@ -237,6 +237,7 @@ module Externals
       print_commands(SHORT_COMMANDS_HASH)
     end
 
+    @registered_scms = nil
     def self.registered_scms
       return @registered_scms if @registered_scms
       @registered_scms ||= []
@@ -293,7 +294,7 @@ module Externals
       return @configuration if @configuration
 
       file_string = ''
-      if File.exists? '.externals'
+      if File.exist?('.externals')
         open('.externals', 'r') do |f|
           file_string = f.read
         end
@@ -309,6 +310,9 @@ module Externals
 
     def initialize options = {}
       super()
+
+      @configuration = nil
+      @projects = nil
 
       scm = configuration['.']
       scm = scm['scm'] if scm
@@ -360,8 +364,8 @@ Please use
         end
 
         if project_name_or_path
-          project = subprojects.detect do |project|
-            project.name == project_name_or_path || project.path == project_name_or_path
+          project = subprojects.detect do |p|
+            p.name == project_name_or_path || p.path == project_name_or_path
           end
 
           raise "no such project" unless project
@@ -417,7 +421,7 @@ Please use
     end
 
     def install args, options
-      if !File.exists? '.externals'
+      if !File.exist?('.externals')
         STDERR.puts "This project does not appear to be managed by externals.  Try 'ext init' first"
         exit NO_EXTERNALS_FILE
       end
@@ -461,7 +465,9 @@ that you are installing. Use an option to specify it
     end
 
     def uninstall args, options
-      raise "Hmm... there's no .externals file in this directory." if !File.exists? '.externals'
+      unless File.exist?('.externals')
+        raise "Hmm... there's no .externals file in this directory."
+      end
 
       project = subproject_by_name_or_path(args[0])
 
@@ -618,14 +624,14 @@ by creating the .externals file manually"
 
         removed_project_paths = old_config.removed_project_paths(
           configuration
-        ).select{|path| File.exists?(path)}
+        ).select{|path| File.exist?(path)}
 
         if !removed_project_paths.empty?
           puts "WARNING: The following subprojects are no longer being maintained in the
 .externals file.  You might want to remove them.  You can copy and paste the
 commands below if you actually wish to delete them."
           removed_project_paths.each do |path|
-            if File.exists? path
+            if File.exist?(path)
               puts "  rm -r #{path}"
             end
           end
@@ -689,7 +695,7 @@ commands below if you actually wish to delete them."
     end
 
     def init args, options = {}
-      raise ".externals already exists" if File.exists? '.externals'
+      raise ".externals already exists" if File.exist?('.externals')
 
       scm = options[:scm]
       type = options[:type]
@@ -726,7 +732,7 @@ Please use the --type option to tell ext which to use."
       end
 
       config = Configuration::Configuration.new_empty
-      raise ".externals already exists" if File.exists?('.externals')
+      raise ".externals already exists" if File.exist?('.externals')
 
       config.add_empty_section '.'
 
@@ -763,7 +769,7 @@ Please use the --type option to tell ext which to use."
 
     protected
     def do_checkout_or_export repository, path, options, sym
-      if File.exists?('.externals')
+      if File.exist?('.externals')
         raise "seems main project is already checked out here?"
       else
         #We appear to be attempting to checkout/export a main project

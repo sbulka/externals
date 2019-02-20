@@ -15,7 +15,7 @@ module Externals
       dest = '' if dest == '.'
       dest = "\"#{dest}\"" if dest && !dest.empty?
 
-      if File.exists? dest
+      if File.exist?(dest)
         up
       else
         opts = resolve_opts "co"
@@ -89,7 +89,7 @@ module Externals
       # delete path if empty
       rmdir_if_empty_ie path
 
-      if File.exists? path
+      if File.exist?(path)
         puts "updating #{path}:"
 
         if branch
@@ -119,12 +119,12 @@ module Externals
       return true if path =~ /^svn(\+ssh)?:/
 
       # Look for http(s)://svn.*/*
-      if path =~ /^https?:\/\/([\w+\-_]+)\.(?:[\w+\-_]+\.)*[\w\-_]+(?:\/|$)/
+      if path =~ /^https?:\/\/([\w+\-]+)\.(?:[\w+\-]+\.)*[\w\-]+(?:\/|$)/
         return true if $1.downcase == "svn"
       end
 
       # Look for http(s)://*/*svn*/
-      if path =~ /^https?:\/\/(?:[\w+\-_]+\.?)+\/(\w+)/
+      if path =~ /^https?:\/\/(?:[\w+\-]+\.?)+\/(\w+)/
         return true if $1.downcase.include? "svn"
       end
 
@@ -140,7 +140,7 @@ module Externals
     end
 
     def self.detected?
-      File.exists? ".svn"
+      File.exist?(".svn")
     end
 
     #this is a test helper method

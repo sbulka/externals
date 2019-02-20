@@ -8,30 +8,52 @@ module Externals
     class TestInitGit < ::Test::Unit::TestCase
       include ExtTestCase
 
-      def test_init
+      def setup
         repository = BasicGitRepository.new
         repository.prepare
 
-        assert File.exists?(repository.clean_dir)
+        assert File.exist?(repository.clean_dir)
 
         workdir = File.join(root_dir, 'test', "tmp", "workdir")
         mkdir_p workdir
 
         Dir.chdir workdir do
           delete_if_dirty(repository.name)
-          if !File.exists?(repository.name)
+          if !File.exist?(repository.name)
             `git clone #{repository.clean_dir} #{repository.name}`
             raise unless $? == 0
           end
 
           mark_dirty(repository.name)
-          Dir.chdir repository.name do
-            assert !File.exists?('.externals')
+        end
 
-            Ext.run "init"
+        @workdir = workdir
+        @repository = repository
+      end
 
-            assert File.exists?('.externals')
-            assert(File.read('.externals') =~ /^\s*scm\s*=\s*git\s*$/)
+      def test_init
+        Dir.chdir @workdir do
+          Dir.chdir @repository.name do
+            assert !File.exist?('.externals')
+
+            rescue_exit { Ext.run "init" }
+
+            config = Externals::Configuration::Configuration.new(File.read('.externals'))
+            assert_equal(config['.']['scm'], 'git')
+          end
+        end
+      end
+
+      def test_init_rails_project
+        Dir.chdir @workdir do
+          Dir.chdir @repository.name do
+            assert !File.exist?('.externals')
+
+            rescue_exit { Ext.run "init", "--type", "rails" }
+
+            config = Externals::Configuration::Configuration.new(File.read('.externals'))
+            assert_equal(config['.']['scm'], 'git')
+            assert_equal(config['.']['type'], 'rails')
           end
         end
       end

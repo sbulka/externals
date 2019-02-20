@@ -15,9 +15,7 @@ module Externals
     protected
 
     def mark_dirty file
-      File.open working_file_name(file), "w" do |file|
-        file.puts "dirty"
-      end
+      File.write(working_file_name(file), "dirty")
     end
 
     def unmark_dirty file
@@ -29,11 +27,11 @@ module Externals
     end
 
     def dirty?(file)
-      File.exists? working_file_name(file)
+      File.exist?(working_file_name(file))
     end
 
     def delete_if_dirty file
-      if File.exists? file
+      if File.exist?(file)
         if dirty?(file)
           rm_rf file
         end
@@ -45,7 +43,7 @@ module Externals
     end
 
     def rails_exe
-      "jruby -S rails"
+      # "jruby -S rails"
       "rails"
     end
 
@@ -55,6 +53,12 @@ module Externals
 
     def root_dir
       File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+    end
+
+    def rescue_exit
+      yield
+    rescue SystemExit
+      # We don't want to end the test suite just because `exit` was called
     end
   end
 end
