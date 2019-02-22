@@ -764,15 +764,23 @@ Please use the --type option to tell ext which to use."
     end
 
     def info(args, options)
+      opt = args[0]
+      opt_set = true
+      if ["path", "branch", "repository", "revision", "scm"].include? opt
+        args = args[1..-1]
+      else
+        opt_set = nil
+      end
       projects.each do |p|
         if args.empty? \
           or args.include? p.path \
-          or args.include? p.repository
-          unless args.include? "revision"
-            puts p.path
-            puts p.branch
+          or args.include? p.repository \
+          or !opt_set
+          if opt
+            puts p.send(opt)
+          else
+            puts "ok"
           end
-          puts p.revision
         end
       end
     end
