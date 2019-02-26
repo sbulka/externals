@@ -418,6 +418,9 @@ Please use
       end
 
       section.rm_setting :revision
+      if section[:scm] = "git" and not section[:branch]
+        section[:branch] = "master"
+      end
       configuration.write '.externals'
       reload_configuration
 
