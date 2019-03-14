@@ -769,7 +769,8 @@ Please use the --type option to tell ext which to use."
     def info(args, options)
       opt = args[0]
       opt_set = true
-      if ["path", "branch", "repository", "revision", "scm"].include? opt
+      queries = ["path", "branch", "repository", "revision", "scm"]
+      if queries.include? opt
         args = args[1..-1]
       else
         opt_set = nil
@@ -782,7 +783,9 @@ Please use the --type option to tell ext which to use."
           if opt
             puts p.send(opt)
           else
-            puts "ok"
+            queries.each do |q|
+              puts "#{q} = #{p.send q}"
+            end
           end
         end
       end
