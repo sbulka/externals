@@ -773,13 +773,12 @@ Please use the --type option to tell ext which to use."
       if queries.include? opt
         args = args[1..-1]
       else
-        opt_set = nil
+        opt = nil
       end
       projects.each do |p|
         if args.empty? \
           or args.include? p.path \
-          or args.include? p.repository \
-          or !opt_set
+          or args.include? p.repository
           if opt
             puts p.send(opt)
           else
